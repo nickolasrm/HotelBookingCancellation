@@ -1,0 +1,5 @@
+kedro==0.18.2
+mlflow~=1.30
+kedro-mlflow~=0.11
+fastapi~=0.86
+pandas~=1.4
