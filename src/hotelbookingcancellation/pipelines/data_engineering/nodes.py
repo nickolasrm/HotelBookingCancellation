@@ -73,7 +73,7 @@ def optimize_objects(df: pd.DataFrame, columns: Optional[List[str]] = None):
         ... })
         >>> optimize_objects(df).dtypes
         a_num               int64
-        b_categ          category
+        b_categ              int8
         c_date     datetime64[ns]
         dtype: object
     """
