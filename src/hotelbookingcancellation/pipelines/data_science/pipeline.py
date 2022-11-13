@@ -12,7 +12,7 @@ def create_pipeline() -> Pipeline:
         [
             node(
                 func=node2,
-                inputs="io1",
+                inputs="preprocessed_hotel_bookings",
                 outputs="io2",
             )
         ]

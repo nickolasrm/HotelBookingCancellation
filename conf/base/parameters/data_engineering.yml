@@ -1,5 +1,22 @@
-# This is a boilerplate parameters config generated for pipeline 'data_engineering'
-# using Kedro 0.18.2.
-#
-# Documentation for this file format can be found in "Parameters"
-# Link: https://kedro.readthedocs.io/en/0.18.2/kedro_project_setup/configuration.html#parameters
+preprocessing:
+  fillna: 0
+  columns_to_drop:
+    - 'days_in_waiting_list'
+    - 'arrival_date_year'
+    - 'arrival_date_year'
+    - 'arrival_date_month'
+    - 'assigned_room_type'
+    - 'booking_changes'
+    - 'reservation_status'
+    - 'country'
+    - 'days_in_waiting_list'
+  columns_to_validate:
+    columns:
+      - 'adults'
+      - 'children'
+      - 'babies'
+    equal_to: 0
+  columns_to_fillna:
+    adr: 'mean'
+  date_column: 'reservation_status_date'
+  target: 'is_canceled'
