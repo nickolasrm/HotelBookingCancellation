@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
+from catboost import CatBoostClassifier  # type: ignore
 
 
 # Created this function in order to not require sklearn's train_test_split as a
@@ -75,3 +76,28 @@ def split_train_test(
         df.drop(columns=[target]), df[target].to_frame(), ratio=train_size
     )
     return tuple(itertools.chain(*parts))  # type: ignore
+
+
+def optimize(
+    x: pd.DataFrame, y: pd.DataFrame, params: Dict[str, Any]
+) -> CatBoostClassifier:
+    """Generates a `CatBoostClassifier` model.
+
+    Note:
+        From all the possible algorithms tested in the optimization process,
+        `CatBoostClassifier` seemed to be the best choice since it has the best
+        performance (highest accuracy, precision, recall and f1-score) and its
+        a suitable algorithm for categorical data like the one we have.
+
+    Args:
+        x (pd.DataFrame): The training features.
+        y (pd.DataFrame): The training target.
+        params (Dict[str, Any]): Kwargs for the `CatBoostClassifier`.
+
+    Returns:
+        CatBoostClassifier: The trained model.
+    """
+    params["train_dir"] = params.get("train_dir", "logs/catboost")
+    cat = CatBoostClassifier(**params)
+    cat.fit(x, y)
+    return cat

@@ -32,3 +32,9 @@ y_test:
   type: pandas.ParquetDataSet
   filepath: data/05_model_input/y_test.parquet
   layer: model_input
+
+model:
+  type: kedro_mlflow.io.models.MlflowModelLoggerDataSet
+  flavor: mlflow.catboost
+  save_args:
+    registered_model_name: hotel_bookings_cancellation
