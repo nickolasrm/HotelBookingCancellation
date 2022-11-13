@@ -10,7 +10,7 @@ preprocessing:
     - 'reservation_status'
     - 'country'
     - 'days_in_waiting_list'
-  columns_to_validate:
+  columns_to_remove:
     columns:
       - 'adults'
       - 'children'

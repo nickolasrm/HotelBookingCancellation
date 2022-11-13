@@ -12,6 +12,7 @@ repos:
         entry: isort
         language: system
         types: [python]
+        args: ["--profile", "black"]
       - id: flake8
         name: Enforcing pep8 (flake8)
         entry: flake8
