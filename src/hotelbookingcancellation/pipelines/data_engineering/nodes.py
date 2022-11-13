@@ -170,10 +170,14 @@ def preprocess_bookings(df: pd.DataFrame, params: Dict[str, Any]):
             params["columns_to_validate"]["columns"],
             params["columns_to_validate"]["equal_to"],
         )
+    )
+    target = df[params["target"]].astype("int8")
+    df = (
+        df.drop(columns=[params["target"]])
         .pipe(log_normalize, params.get("columns_to_normalize", None))
         .pipe(optimize_objects, params.get("columns_to_optimize", None))
         .pipe(unpack_date, params["date_column"])
+        .assign(**{params["target"]: target})
         .pipe(fillna, params.get("columns_to_fillna", {}))
-        .astype({params["target"]: "int8"})
     )
     return df
