@@ -1,6 +1,6 @@
 """Contains the functions related to the raw data refinement step."""
 from functools import reduce
-from typing import Any, Callable, Dict, List, Literal, Optional
+from typing import Any, Callable, Dict, List, Literal, Optional, TypedDict
 
 import numpy as np
 import pandas as pd
@@ -146,7 +146,36 @@ def fillna(df: pd.DataFrame, columns: Dict[str, Literal["mean", "median"]]):
     return df
 
 
-def preprocess_bookings(df: pd.DataFrame, params: Dict[str, Any]):
+class _ColumnsToRemove(TypedDict):
+    """The columns to validate."""
+
+    columns: List[str]
+    """Columns to check."""
+    equal_to: Any
+    """Value to match."""
+
+
+class _PreprocessBookingsParams(TypedDict, total=False):
+    columns_to_drop: List[str]
+    """Name of the dataframe columns to drop."""
+    fillna: Any
+    """Value to replace nans with."""
+    columns_to_remove: _ColumnsToRemove
+    """Columns to remove if all values are equal to `equal_to`."""
+    target: str
+    """Target column name."""
+    date_column: str
+    """Date column name."""
+    columns_to_normalize: Optional[List[str]]
+    """Columns to normalize with log+1. If None, all numerical columns are selected."""
+    columns_to_optimize: Optional[List[str]]
+    """Columns to optimize with `optimize_objects`. If None, all object columns are
+    selected."""
+    columns_to_fillna: Dict[str, Literal["mean", "median"]]
+    """Columns to fill missing values with `fillna`."""
+
+
+def preprocess_bookings(df: pd.DataFrame, params: _PreprocessBookingsParams):
     """Preprocesses the raw `hotel_bookings` dataset.
 
     1. Drops unnecessary columns.
@@ -157,7 +186,7 @@ def preprocess_bookings(df: pd.DataFrame, params: Dict[str, Any]):
 
     Args:
         df (pd.DataFrame): The raw `hotel_bookings` dataset.
-        params (Dict[str, Any]): The parameters for preprocessing.
+        params (_PreprocessBookingsParams): The parameters for preprocessing.
 
     Returns:
         pd.DataFrame: The preprocessed dataset.
@@ -167,8 +196,8 @@ def preprocess_bookings(df: pd.DataFrame, params: Dict[str, Any]):
         .fillna(params.get("fillna", 0))
         .pipe(
             remove_if_all_equal,
-            params["columns_to_validate"]["columns"],
-            params["columns_to_validate"]["equal_to"],
+            params["columns_to_remove"]["columns"],
+            params["columns_to_remove"]["equal_to"],
         )
     )
     target = df[params["target"]].astype("int8")
