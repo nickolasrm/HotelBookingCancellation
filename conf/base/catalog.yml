@@ -12,3 +12,23 @@ preprocessed_hotel_bookings:
   type: pandas.ParquetDataSet
   filepath: data/03_primary/preprocessed_hotel_bookings.parquet
   layer: primary
+
+x_train:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/x_train.parquet
+  layer: model_input
+
+x_test:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/x_test.parquet
+  layer: model_input
+
+y_train:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/y_train.parquet
+  layer: model_input
+
+y_test:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/y_test.parquet
+  layer: model_input
