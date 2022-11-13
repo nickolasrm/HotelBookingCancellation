@@ -23,7 +23,7 @@ project_version = "0.18.2"
 addopts = """
 --cov-report term-missing \
 --doctest-modules \
---cov src/hotelbookingcancellation -ra"""
+--cov src/hotelbookingcancellation/pipelines -ra"""
 
 [tool.coverage.report]
 fail_under = 0

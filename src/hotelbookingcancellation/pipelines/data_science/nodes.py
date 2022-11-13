@@ -1,6 +1,6 @@
 """Contains functions related to the data science step."""
 import itertools
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, TypedDict
 
 import numpy as np
 import pandas as pd
@@ -52,16 +52,21 @@ def index_split(
     ]
 
 
+class _SplitTrainTestParams(TypedDict):
+    target: str
+    """The target column."""
+    test_size: float
+    """The proportion of the test set."""
+
+
 def split_train_test(
-    df: pd.DataFrame, params: Dict[str, Any]
+    df: pd.DataFrame, params: _SplitTrainTestParams
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Splits the data into training and test sets.
 
     Args:
         df (pd.DataFrame): The input data.
-        params (Dict[str, Any]): The parameters.
-            * test_size (float): The size of the test set.
-            * target (str): The target column.
+        params (_SplitTrainTestParams): params for the split.
 
     Returns:
         Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -112,6 +117,7 @@ def evaluate(
         model (CatBoostClassifier): The model to evaluate.
         x (pd.DataFrame): The test features.
         y (pd.DataFrame): The test target.
+        params (Dict[str, Any]): Kwargs for the `eval_metrics` method.
 
     Returns:
         Dict[str, list]: The evaluation metrics history.
