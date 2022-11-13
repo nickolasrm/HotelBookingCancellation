@@ -1,9 +1,8 @@
-"""This is a boilerplate pipeline 'data_science' generated using Kedro 0.18.2.
-"""
+"""Creates the data science pipeline."""
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import node2
+from .nodes import split_train_test
 
 
 def create_pipeline() -> Pipeline:
@@ -11,9 +10,10 @@ def create_pipeline() -> Pipeline:
     return pipeline(
         [
             node(
-                func=node2,
-                inputs="preprocessed_hotel_bookings",
-                outputs="io2",
+                func=split_train_test,
+                inputs=["preprocessed_hotel_bookings", "params:split_train_test"],
+                outputs=["x_train", "x_test", "y_train", "y_test"],
+                name="split_train_test",
             )
         ]
     )
