@@ -38,3 +38,9 @@ model:
   flavor: mlflow.catboost
   save_args:
     registered_model_name: hotel_bookings_cancellation
+  layer: models
+
+metrics:
+  type: kedro_mlflow.io.metrics.MlflowMetricsDataSet
+  layer: reporting
+  prefix: ""

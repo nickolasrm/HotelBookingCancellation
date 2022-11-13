@@ -5,4 +5,9 @@ split_train_test:
 optimize:
   iterations: 100
 
-evaluate: null
+evaluate:
+  metrics:
+    - 'Accuracy'
+    - 'Precision'
+    - 'Recall'
+    - 'F1'

@@ -2,7 +2,7 @@
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import optimize, split_train_test
+from .nodes import evaluate, optimize, split_train_test
 
 
 def create_pipeline() -> Pipeline:
@@ -20,6 +20,12 @@ def create_pipeline() -> Pipeline:
                 inputs=["x_train", "y_train", "params:optimize"],
                 outputs="model",
                 name="optimize",
+            ),
+            node(
+                func=evaluate,
+                inputs=["model", "x_test", "y_test", "params:evaluate"],
+                outputs="metrics",
+                name="evaluate",
             ),
         ]
     )
