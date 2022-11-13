@@ -4,3 +4,26 @@ services:
     build: docker/mlflow
     ports:
       - "5000:5000"
+  train:
+    build:
+      context: .
+      dockerfile: docker/build/Dockerfile
+    command: hotelbookingcancellation
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+  api:
+    build:
+      context: .
+      dockerfile: docker/build/Dockerfile
+    command: hotelbookingcancellation --pipeline scoring
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    ports:
+      - "3000:3000"
+    depends_on:
+      mlflow:
+        condition: service_started
+      train:
+        condition: service_completed_successfully
