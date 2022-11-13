@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
-from catboost import CatBoostClassifier  # type: ignore
+from catboost import CatBoostClassifier, Pool  # type: ignore
 
 
 # Created this function in order to not require sklearn's train_test_split as a
@@ -101,3 +101,23 @@ def optimize(
     cat = CatBoostClassifier(**params)
     cat.fit(x, y)
     return cat
+
+
+def evaluate(
+    model: CatBoostClassifier, x: pd.DataFrame, y: pd.DataFrame, params: Dict[str, Any]
+) -> Dict[str, list]:
+    """Evaluates the model.
+
+    Args:
+        model (CatBoostClassifier): The model to evaluate.
+        x (pd.DataFrame): The test features.
+        y (pd.DataFrame): The test target.
+
+    Returns:
+        Dict[str, list]: The evaluation metrics history.
+    """
+    pool = Pool(x, y)
+    return {
+        metric: [{"step": i, "value": value} for i, value in enumerate(values)]
+        for metric, values in model.eval_metrics(pool, **params).items()
+    }
