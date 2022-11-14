@@ -1,0 +1,13 @@
+# Put replacements for TemplatedConfigLoader here
+#
+# Example:
+# ```globals.yml
+# my_var: 'my_value'
+# ```
+#
+# Then you can use it in your catalog like this:
+# ```catalog.yml
+# dataset:
+#   type: pandas.CSVDataSet
+#   filepath: ${my_var}/my_file.csv
+# ```

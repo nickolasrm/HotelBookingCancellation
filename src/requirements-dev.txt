@@ -1,0 +1,6 @@
+kedro-telemetry~=0.2.0
+ipython>=7.31.1, <8.0
+jupyter~=1.0
+jupyterlab~=3.0
+black~=22.10
+kedro-viz~=5.1

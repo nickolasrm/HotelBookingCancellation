@@ -1,0 +1,54 @@
+# Here you can define all your data sets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://kedro.readthedocs.io/en/stable/data/data_catalog.html
+
+hotel_bookings:
+  type: pandas.CSVDataSet
+  filepath: https://storage.googleapis.com/dsc-public-info/general/jobs_challenges/machine_learning/entry_level/datasets/hotel_bookings.csv
+  layer: raw
+
+preprocessed_hotel_bookings:
+  type: pandas.ParquetDataSet
+  filepath: data/03_primary/preprocessed_hotel_bookings.parquet
+  layer: primary
+
+x_train:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/x_train.parquet
+  layer: model_input
+
+x_test:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/x_test.parquet
+  layer: model_input
+
+y_train:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/y_train.parquet
+  layer: model_input
+
+y_test:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/y_test.parquet
+  layer: model_input
+
+model:
+  type: kedro_mlflow.io.models.MlflowModelLoggerDataSet
+  flavor: mlflow.catboost
+  save_args:
+    registered_model_name: hotel_bookings_cancellation
+  layer: models
+
+metrics:
+  type: kedro_mlflow.io.metrics.MlflowMetricsDataSet
+  layer: reporting
+  prefix: ""
+
+api_model:
+  type: hotelbookingcancellation.pipelines.scoring.MlflowModelLoaderDataSet
+  flavor: mlflow.catboost
+  model: hotel_bookings_cancellation
+  stage: production
+  retry:
+    enabled: true

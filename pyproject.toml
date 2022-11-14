@@ -1,0 +1,31 @@
+[project]
+name = "HotelBookingCancellation"
+version = "0.1.0"
+description = "Predicts when a person has a chance of cancelling a hotel booking"
+authors = [
+    {name = "Nickolas da Rocha Machado", email="nickolasrochamachado@gmail.com"},
+]
+license = {file = "LICENSE"}
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Framework :: Kedro",
+    "Framework :: FastAPI",
+    "Programming Language :: Python :: 3.9",
+]
+
+[tool.kedro]
+package_name = "hotelbookingcancellation"
+project_name = "HotelBookingCancellation"
+project_version = "0.18.2"
+
+[tool.pytest.ini_options]
+addopts = """
+--cov-report term-missing \
+--doctest-modules \
+--cov src/hotelbookingcancellation/pipelines -ra"""
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]

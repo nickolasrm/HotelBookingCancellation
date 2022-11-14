@@ -1,0 +1,32 @@
+exclude: docs/
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: Formatting code (black)
+        entry: black
+        language: system
+        types: [python]
+      - id: isort
+        name: Sorting imports (isort)
+        entry: isort
+        language: system
+        types: [python]
+        args: ["--profile", "black"]
+      - id: flake8
+        name: Enforcing pep8 (flake8)
+        entry: flake8
+        language: system
+        types: [python]
+      - id: mypy
+        name: Checking type matching (mypy)
+        entry: mypy
+        language: system
+        types: [python]
+        exclude: (src/tests/*)|(.*/__main__.py)|(.*/setup.py)
+      - id: pylint
+        name: Preventing technical debt (pylint)
+        entry: pylint
+        language: system
+        types: [python]
+        exclude: (.*/__main__.py)|(.*/setup.py)

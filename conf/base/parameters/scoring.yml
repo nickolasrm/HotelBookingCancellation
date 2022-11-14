@@ -1,0 +1,4 @@
+scoring:
+  uvicorn:
+    host: '${SCORING_HOST|0.0.0.0}'
+    port: '${SCORING_PORT|8000}'
