@@ -1,9 +1,10 @@
 """Contains the nodes for the scoring pipeline."""
+from datetime import date
 from typing import List, TypedDict, Union
 
 import pandas as pd
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from pydantic import BaseModel
 
 from ..data_engineering.nodes import _PreprocessBookingsParams, preprocess_bookings
@@ -20,7 +21,7 @@ class Booking(BaseModel):
     reserved_room_type: str
     deposit_type: str
     customer_type: str
-    reservation_status_date: str
+    reservation_status_date: date
     lead_time: int
     arrival_date_week_number: int
     arrival_date_day_of_month: int
@@ -94,12 +95,9 @@ def scoring_server(
     def score(bookings: List[Booking]):
         df = pd.json_normalize([booking.dict() for booking in bookings])
         df[preprocess_params["target"]] = 0
-        try:
-            df = preprocess_bookings(df, preprocess_params).drop(
-                columns=preprocess_params["target"]
-            )
-        except Exception as exc:
-            raise HTTPException(status_code=400, detail="Invalid input") from exc
+        df = preprocess_bookings(df, preprocess_params).drop(
+            columns=preprocess_params["target"]
+        )
         return dataset.model.predict(df).tolist()
 
     uvicorn.run(app, **scoring_params.get("uvicorn", {}))
