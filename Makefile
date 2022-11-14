@@ -1,10 +1,13 @@
 install:
 	pip install -r src/requirements.txt
 
-install-dev:
+install-test:
 	make install
-	pip install -r src/requirements-dev.txt
 	pip install -r src/requirements-test.txt
+
+install-dev:
+	make install-test
+	pip install -r src/requirements-dev.txt
 	git init
 	pre-commit install
 

@@ -8,3 +8,4 @@ mypy>=0.910, <1.0
 pylint>=2.10.2, <3.0
 tomli>=1.2.1, <2.0
 pandas-stubs~=1.4
+black~=22.10
