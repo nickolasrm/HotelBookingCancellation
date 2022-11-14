@@ -1,5 +1,9 @@
 # HotelBookingCancellation
 
+[![Build](https://github.com/nickolasrm/HotelBookingCancellation/actions/workflows/build.yml/badge.svg)](https://github.com/nickolasrm/HotelBookingCancellation/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/nickolasrm/HotelBookingCancellation/branch/main/graph/badge.svg?token=acMJMBymgT)](https://codecov.io/gh/nickolasrm/HotelBookingCancellation)
+![GitHub](https://img.shields.io/github/license/nickolasrm/HotelBookingCancellation)
+
 ## Description
 
 ### Overview
