@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Protocol
 
 import mlflow  # type: ignore
 import mlflow.exceptions  # type: ignore
-from kedro.io import AbstractDataSet
+from kedro.io import AbstractDataSet, DataSetError
 
 
 class MlflowLoaderFlavor(Protocol):  # pylint: disable=too-few-public-methods
@@ -21,7 +21,7 @@ class _Update:
     enabled: bool = True
     max: int = -1
     interval: float = 0.5
-    last: float = 0.0
+    last: float = float("-inf")
     data: Any = None
 
 
@@ -98,7 +98,7 @@ class MlflowModelLoaderDataSet(AbstractDataSet):
         try:
             if not self._check_updated():
                 self._load()
-        except mlflow.exceptions.RestException:
+        except mlflow.MlflowException:
             self._load()
         return self._model.data
 
@@ -107,6 +107,9 @@ class MlflowModelLoaderDataSet(AbstractDataSet):
 
         Returns:
             Any: The loaded model.
+
+        Raises:
+            mlflow.MlflowException: If the model is not found after retries.
         """
         retry = 0
         max_retries = self._retry.max if self._retry.enabled else 1
@@ -116,12 +119,15 @@ class MlflowModelLoaderDataSet(AbstractDataSet):
                 return self
             except mlflow.MlflowException:
                 self._logger.warning(
-                    "Failed to load model %s from stage %s",
+                    "Failed to load model '%s' from stage '%s'",
                     self._model_name,
                     self._stage,
                 )
                 retry += 1
                 time.sleep(self._retry.interval)
+        raise DataSetError(
+            f"Failed to load model '{self._model_name}' from stage '{self._stage}'"
+        )
 
     def _save(self, _: Any):
         """Saves the model."""
