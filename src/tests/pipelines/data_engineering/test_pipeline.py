@@ -59,7 +59,7 @@ def test_preprocess_bookings_minimum(
     assert "day" in df.columns
     assert df["t"].dtype == np.int8
     assert df["num0"].tolist() != raw_df["num0"].iloc[[1, 3]].tolist()
-    assert df["cat1"].dtype == np.int8
+    assert df["cat1"].dtype == "object"
 
 
 def test_preprocess_bookings_select_log_normalize(
@@ -78,9 +78,9 @@ def test_preprocess_bookings_select_optimize(
 ):
     """Test preprocessing with selected optimize columns."""
     params = min_params.copy()
-    params["columns_to_optimize"] = ["cat1"]
+    params["columns_to_map"] = {"cat1": {"a": 0, "d": 1, "e": 2}}
     df = preprocess_bookings(raw_df, params)
-    assert df["cat1"].dtype == "int8"
+    assert df["cat1"].dtype == "int64"
     assert df["cat0"].dtype == "object"
 
 

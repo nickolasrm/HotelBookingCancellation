@@ -193,7 +193,7 @@ def preprocess_bookings(df: pd.DataFrame, params: _PreprocessBookingsParams):
     df = (
         df.drop(columns=[params["target"]])
         .pipe(log_normalize, params.get("columns_to_normalize", None))
-        .pipe(map_columns, params.get("columns_to_map", None))
+        .pipe(map_columns, params.get("columns_to_map", {}))
         .pipe(unpack_date, params["date_column"])
         .assign(**{params["target"]: target})
         .pipe(fillna, params.get("columns_to_fillna", {}))
