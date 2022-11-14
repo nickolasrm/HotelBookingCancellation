@@ -4,122 +4,97 @@
 
 ### Overview
 
-Main idea of the project, business pain, what was used to solve it and its firsts results
-
-Ex: We wanted to validate if the demand behaviour of our clients, ex: gasoline and alcohol demand, for a specific month is normal, inside some boundries, or not. To do that we used the algorithm XPTO and in our firsts results we reduced the fee for wasted product / or reduced the amount of debt not paid by clients by XX% / in R$ YY, because we denied purchases that were out ou the client usual behaviour
+This project aims to predict which customers are probably going to cancel a hotel booking given the booking data and the customer history.
 
 ### Motivation
 
-Business pain we wanted to solve. Why has this project been developed?
+The motivation behind this project is to avoid the loss of revenue due to cancellations. There's a lot of bureaucracy and cost in booking and 'unbooking' a room, so it's useful to know if a customer is going to cancel it or not.
 
 ### Dataflow Diagram
 
-Design a simple descriptive dataflow diagram. You can use [Kedro Viz](https://github.com/kedro-org/kedro-viz), [Mermaid](https://mermaid-js.github.io/mermaid/#/) and [MermaidCLI](https://github.com/mermaid-js/mermaid-cli#transform-a-markdown-file-with-mermaid-diagrams) and [VSCode Mermaid](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid), [PlantUML](https://plantuml.com/) or a custom markdown image under the `docs/assets` folder.
+![Dataflow Diagram](/dataflow.png)
 
 ### Pipelines
 
-Enter a simple description of the `Kedro` pipelines. If possible, use the same tools used in the DataFlow section for explaining it.
+* `de`: Performs the preprocessing over the raw data.
+* `ds`: Performs the training and evaluation of the model.
+* `__default__`: This pipeline is the combination of both `de` and `ds` pipelines.
+* `scoring`: Starts an inference server with the trained model.
 
-_Example:_
-
-* **Data Engineering:** Pre-processes the inputs X, Y, Z using moving averages in order to smooth the prediction results producing A, B, C.
-
-* **Data Science:** Predicts the inputs A, B, C values for the post three months from the execution moment using linear regression producing outputs D, E, F. 
+> Note: Every model and metrics outputs are saved in the `mlflow` server.
 
 ### Inputs/Features
 
-This project requires the following data/artifacts:
+| Artifact        | Type    | Notes            |
+| --------------- | ------- | ---------------- |
+| hotel_bookings  | Tabular | Fetched from web |
 
-_Example:_
-
-#### Artifacts
-
-| Artifact | Type    | Notes  |
-| -------- | ------- | ------ |
-| iris     | Tabular |        |
-
-#### Features
-
-| From     | Feature      | Notes  |
-| -------- | ------------ | ------ |
-| iris     | Sepal length |        |
-| iris     | Sepal width  |        |
-| iris     | Petal length |        |
-| iris     | Petal width  |        |
-| iris     | Species      | Target |
 
 ### Outputs
 
-This project generates the following data/artifacts:
-
-_Example:_
-
 | Artifact   | Type    | Notes            |
 | --------   | ------- | ---------------- |
-| Classifier | Model   |                  |
-| Report     | Metrics | Accuracy, Recall |
+| model      | Model   | [link](/conf/base/catalog.yml)                 |
+| metrics    | Metrics | [link](/conf/base/parameters/data_science.yml) |
 
 ### Algorithm explanation
 
-Explain the main data science process, what algorithm was chosen, why it was chosen, and how it solves the problem.
-
 #### Data preparation
 
-Describe how you cleaned and processed data for the post steps.
+The raw data is fetched from the web and loaded into memory. Some columns are then dropped, and the rest are converted to the correct data type given the dataset description specified in [Hotel bookings dataset](https://www.sciencedirect.com/science/article/pii/S2352340918315191#!%29). Then the data is normalized and nan values are filled. This first part is parametrized and configurable through this [file](/conf/base/parameters/data_engineering.yml).
+
+After that, the data is split into train and test sets. This is also configurable through this [file](/conf/base/parameters/data_science.yml).
 
 #### Feature Engineering
 
-Describe what criteria did you use to choose the actual features for this model.
+No feature engineering was deeply performed, but some of the columns dropped in the data preparation step were dropped because of their low correlation with the target.
 
 #### Optimization
 
-Describe how you trained the chosen algorithm, what metrics you used, and how you validated its result.
+A `CatBoostClassifier` model is generated with the parameters specified [here](/conf/base/parameters/data_science.yml) and saved into the `mlflow` server. This algorithm was chosen because of the high scores it achieved, and because its categorical features handling is suitable for the kind of data we have.
 
-### Use Cases
+#### Evaluation
 
-Describe some possible scenarios for using this project outputs.
+After training, the metrics are logged in the `mlflow` server. The metrics are specified in this [file](/conf/base/parameters/data_science.yml).
 
 ## Usage
 
+This project was built using a microservice architecture, so the model is deployed in a docker container and an API is provided to interact with it.
+
 ### Installation
 
-In order to run this project, execute the following steps:
+1. Be sure you have `docker`, and `docker-compose` installed.
+2. Run `docker-compose build` to build the images.
+3. Run `docker-compose up -d` to start the containers.
+4. Access the `mlflow` server at `localhost:5000`.
+5. Access the scoring server at `localhost:8000`.
 
-1. Clone this repo
-2. Go to the project folder using terminal
-3. Run `pip install -r src/requirements.txt`
+### Scoring
 
-### Execution
+After the training container is finished, the API service is going to be available at `localhost:8000`. To interact with it, you can use post requests providing regular booking data as a list of dictionaries to the request body. The response will be a list of predictions, one for each booking.
 
-For executing the pipelines mentioned before, run the following commands:
-
-1. Execute `kedro <projetaai-plugin> init` for creating the missing local files
-2. Run `kedro run --pipeline <pipeline_name>`
-
-#### Notes
-
-If required, add any more information the user should know for using this pipeline. For example, login operations.
+The API was built on top of `FastAPI`, which means you can check the API documentation at `localhost:8000/docs` with a real usage example.
 
 ## Development
 
-There are some other tools required for changing the project source code. Execute the commands below:
+In case of any changes to the code, make sure to run `make install-dev` to have the development tools installed. it's also recommended to leave the `mlflow` container running to have the `mlflow` server available.
 
-1. Install dev deps with `pip install -r src/requirements-dev.txt`
-2. Install test deps with `pip install -r src/requirements-test.txt`
-3. Install pre-commit with `pre-commit install`
-4. If unit tests were created, run `pytest` before committing to ensure no breaking changes were made.
+### Quality
+
+`pre-commit` is automatically installed whenever you run `make install` or `make install-dev`. This tool will run the lints specified in the [.pre-commit-config.yaml](/.pre-commit-config.yaml) file before every commit. If you want to run the lints manually, you can run `make lint` after staging your changes.
+
+Testing is also available through `pytest`. To run the tests, run `make test`.
+
+### Local execution
+
+This project uses [kedro](https://kedro.readthedocs.io/en/stable/) to manage the pipelines. To run them locally, you can use the `kedro` command. For example, to run the `de` pipeline, run `kedro run --pipeline de`. To run the `__default__` pipeline, run `kedro run`.
+
+If you want to see other available commands or get help about one, run `kedro <command> --help`.
 
 ## Authors
-
-Enter the name and email of the authors in this section using a bullet list:
 
 * Nickolas da Rocha Machado; [nickolasrochamachado@gmail.com](mailto:nickolasrochamachado@gmail.com)
 
 ## References
 
-Fill this section with the articles and papers that were relevant to developing this solution.
-
-_Example:_
-
-1. [XOR-Net: An Efficient Computation Pipeline for Binary Neural Network
-Inference on Edge Devices](https://cmu-odml.github.io/papers/XOR-Net_An_Efficient_Computation_Pipeline_for_Binary_Neural_Network_Inference_on_Edge_Devices.pdf)
+1. [Hotel booking demand datasets](https://www.sciencedirect.com/science/article/pii/S2352340918315191#!%29)
