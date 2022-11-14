@@ -14,4 +14,5 @@ RUN mkdir -p ${HOME}/mlruns
 CMD mlflow server \
     --backend-store-uri ${MLFLOW_TRACKING_URI} \
     --registry-store-uri ${MLFLOW_REGISTRY_URI} \
-    --host ${MLFLOW_HOST}
+    --host ${MLFLOW_HOST} \
+    --serve-artifacts
