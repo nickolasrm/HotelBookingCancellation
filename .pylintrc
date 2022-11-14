@@ -1,2 +1,5 @@
+[MASTER]
+extension-pkg-whitelist=pydantic
+
 [BASIC]
 good-names=i, j, k, df, fn, x, y

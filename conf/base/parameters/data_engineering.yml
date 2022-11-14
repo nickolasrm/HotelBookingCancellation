@@ -10,6 +10,51 @@ preprocessing:
     - 'reservation_status'
     - 'country'
     - 'days_in_waiting_list'
+  columns_to_map:
+    hotel:
+      Resort Hotel: 0
+      City Hotel: 1
+    meal:
+      BB: 0
+      FB: 1
+      HB: 2
+      SC: 3
+      Undefined: 4
+    market_segment:
+      Direct: 0
+      Corporate: 1
+      Online TA: 2
+      Offline TA/TO: 3
+      Complementary: 4
+      Groups: 5
+      Undefined: 6
+      Aviation: 7
+    distribution_channel:
+      Direct: 0
+      Corporate: 1
+      TA/TO: 2
+      Undefined: 3
+      GDS: 4
+    reserved_room_type:
+      C: 0
+      A: 1
+      D: 2
+      E: 3
+      G: 4
+      F: 5
+      H: 6
+      L: 7
+      B: 8
+    deposit_type:
+      No Deposit: 0
+      Refundable: 2
+      Non Refund: 1
+    customer_type:
+      Transient: 0
+      Contract: 1
+      Transient-Party: 2
+      Group: 3
+    # wont add year because it isn't scalable
   columns_to_remove:
     columns:
       - 'adults'

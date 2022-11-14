@@ -49,6 +49,6 @@ api_model:
   type: hotelbookingcancellation.pipelines.scoring.MlflowModelLoaderDataSet
   flavor: mlflow.catboost
   model: hotel_bookings_cancellation
-  stage: staging
+  stage: production
   retry:
     enabled: true

@@ -54,38 +54,27 @@ def log_normalize(df: pd.DataFrame, columns: Optional[List[str]] = None):
     return df
 
 
-def optimize_objects(df: pd.DataFrame, columns: Optional[List[str]] = None):
-    """Infers the most efficient data type for object columns.
+def map_columns(df: pd.DataFrame, mappings: Dict[str, Dict[str, int]]):
+    """Maps values in columns to integers.
 
     Args:
-        df (pd.DataFrame): The dataframe to optimize.
-        columns (Optional[List[str]]): The columns to optimize. If None, all
-            object columns are optimized.
+        df (pd.DataFrame): The dataframe to map values in.
+        mappings (Dict[str, Dict[str, int]]): The mappings to apply.
 
     Returns:
-        pd.DataFrame: The dataframe with optimized object columns.
+        pd.DataFrame: The dataframe with mapped values.
 
     Example:
-        >>> df = pd.DataFrame({
-        ...     "a_num": [1, 2],
-        ...     "b_categ": ["a", "b"],
-        ...     "c_date": ["2020-01-01", "2020-01-02"],
-        ... })
-        >>> optimize_objects(df).dtypes
-        a_num               int64
-        b_categ              int8
-        c_date     datetime64[ns]
-        dtype: object
+        >>> df = pd.DataFrame({"a": ["a", "b", "c"], "b": ["a", "a", "b"]})
+        >>> map_columns(df, {"a": {"a": 0, "b": 1, "c": 2}, "b": {"a": 0, "b": 1}})
+           a  b
+        0  0  0
+        1  1  0
+        2  2  1
     """
     df = df.copy()
-    columns = columns or [col for col in df.columns if types.is_object_dtype(df[col])]
-    for col in columns:
-        series = df[col]
-        if col.endswith("date"):
-            series = pd.to_datetime(series)
-        else:
-            series = series.astype("category").cat.codes
-        df[col] = series
+    for col, mapping in mappings.items():
+        df[col] = df[col].map(mapping)
     return df
 
 
@@ -180,7 +169,7 @@ def preprocess_bookings(df: pd.DataFrame, params: _PreprocessBookingsParams):
 
     1. Drops unnecessary columns.
     2. Remove rows where all columns are zero.
-    3. Optimize categorical columns.
+    3. Maps categorical columns.
     4. Normalize numeric columns.
     5. Fill missing values.
 
@@ -192,7 +181,7 @@ def preprocess_bookings(df: pd.DataFrame, params: _PreprocessBookingsParams):
         pd.DataFrame: The preprocessed dataset.
     """
     df = (
-        df.drop(columns=params["columns_to_drop"])
+        df.drop(columns=params["columns_to_drop"], errors="ignore")
         .fillna(params.get("fillna", 0))
         .pipe(
             remove_if_all_equal,
@@ -204,7 +193,7 @@ def preprocess_bookings(df: pd.DataFrame, params: _PreprocessBookingsParams):
     df = (
         df.drop(columns=[params["target"]])
         .pipe(log_normalize, params.get("columns_to_normalize", None))
-        .pipe(optimize_objects, params.get("columns_to_optimize", None))
+        .pipe(map_columns, params.get("columns_to_map", None))
         .pipe(unpack_date, params["date_column"])
         .assign(**{params["target"]: target})
         .pipe(fillna, params.get("columns_to_fillna", {}))

@@ -5,7 +5,7 @@ generated using Kedro 0.18.2
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import node3
+from .nodes import scoring_server
 
 
 def create_pipeline() -> Pipeline:
@@ -13,9 +13,10 @@ def create_pipeline() -> Pipeline:
     return pipeline(
         [
             node(
-                func=node3,
-                inputs=None,
-                outputs="io3",
+                func=scoring_server,
+                inputs=["api_model", "params:preprocessing", "params:scoring"],
+                outputs=None,
+                name="scoring",
             )
         ]
     )

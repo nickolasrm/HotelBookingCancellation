@@ -1,5 +1,4 @@
-# This is a boilerplate parameters config generated for pipeline 'scoring'
-# using Kedro 0.18.2.
-#
-# Documentation for this file format can be found in "Parameters"
-# Link: https://kedro.readthedocs.io/en/0.18.2/kedro_project_setup/configuration.html#parameters
+scoring:
+  uvicorn:
+    host: '${SCORING_HOST|0.0.0.0}'
+    port: '${SCORING_PORT|8000}'
